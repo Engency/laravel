@@ -1,0 +1,58 @@
+version: '3.7'
+
+services:
+  mariadb:
+    image: mariadb:10.5.3-bionic
+    volumes:
+      - ./storage/mysql:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD:
+      MYSQL_ROOT_PASSWORD: root
+      TZ: "Europe/Amsterdam"
+
+  webserver:
+    image: engency/webserver:debug-webserver-npm
+    volumes:
+      - .:/var/www/html
+      - ./storage/apache:/var/log/apache2
+      - ./storage:/var/www/html/storage
+    ports:
+      - "80:80"
+    environment:
+      CONTAINER_ROLE: app
+      APP_ENV: local
+      XDEBUG_CONFIG: remote_host=172.17.0.1
+      PHP_IDE_CONFIG: serverName=webserver
+      TZ: "Europe/Amsterdam"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 5m
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  redis:
+    image: redis:5-alpine
+    volumes:
+      - redis:/data
+
+  queue:
+    image: engency/webserver:debug-webserver
+    user: www-data
+    volumes:
+      - .:/var/www/html
+      - ./storage:/var/www/html/storage
+    depends_on:
+      - webserver
+    environment:
+      CONTAINER_ROLE: queue
+      APP_ENV: local
+      XDEBUG_CONFIG: remote_host=172.17.0.1
+      PHP_IDE_CONFIG: serverName=queue
+      TZ: "Europe/Amsterdam"
+
+volumes:
+  redis:
+    driver: "local"
