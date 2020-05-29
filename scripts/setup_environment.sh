@@ -23,33 +23,39 @@ docker-compose pull
 echo "Starting services..."
 
 output=$(mktemp "${TMPDIR:-/tmp/}log_laravel_engency_installation.XXX")
-docker-compose up &> $output &
+docker-compose up &>$output &
 server_pid=$!
-until grep -q -i 'Server socket created on IP' $output
-do
-  if ! ps $server_pid > /dev/null
-  then
-    echo "The server died" >&2
-    exit 1
-  fi
-  echo -n "."
-  sleep 1
+until grep -q -i 'Server socket created on IP' $output; do
+    if ! ps $server_pid >/dev/null; then
+        echo "The server died" >&2
+        exit 1
+    fi
+    echo -n "."
+    sleep 1
 done
 echo
-echo "Server is running!"
+echo "Containers are up and running!"
 
-# install dependencies
-docker exec "${dirName}"_webserver_1 chown -R www-data: storage/app
-docker exec "${dirName}"_webserver_1 chown -R www-data: storage/framework
-docker exec "${dirName}"_webserver_1 chown -R www-data: storage/logs
-docker exec "${dirName}"_webserver_1 chmod -R 740 storage/app
-docker exec "${dirName}"_webserver_1 chmod -R 740 storage/framework
-docker exec "${dirName}"_webserver_1 chmod -R 740 storage/logs
+# fixing permissions
+directories=(storage/app storage/framework storage/logs bootstrap/cache)
+for storageDirectory in "${directories[@]}"; do
+    docker exec "${dirName}"_webserver_1 chgrp -R www-data "${storageDirectory}"
+    docker exec "${dirName}"_webserver_1 find "${storageDirectory}" -type f -exec chmod 644 {} \;
+    docker exec "${dirName}"_webserver_1 find "${storageDirectory}" -type d -exec chmod 755 {} \;
+done
+
+# installing dependencies
 docker exec "${dirName}"_webserver_1 composer install
 
+# generate a random key
 docker exec "${dirName}"_webserver_1 php artisan key:generate
 
-docker exec -u www-data "${dirName}"_webserver_1 php artisan migrate
+read -p "Would you like to run the default migrations? [y/n] " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    # create basic tables
+    docker exec -u www-data "${dirName}"_webserver_1 php artisan migrate
+fi
 
 # start application
 xdg-open http://localhost &

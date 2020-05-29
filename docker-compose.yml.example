@@ -14,6 +14,7 @@ services:
 
   webserver:
     image: engency/webserver:debug-webserver-npm
+    entrypoint: ./scripts/startup.sh
     volumes:
       - .:/var/www/html
       - ./storage/apache:/var/log/apache2
@@ -33,13 +34,9 @@ services:
       retries: 3
       start_period: 10s
 
-  redis:
-    image: redis:5-alpine
-    volumes:
-      - redis:/data
-
   queue:
     image: engency/webserver:debug-webserver
+    entrypoint: ./scripts/startup.sh
     user: www-data
     volumes:
       - .:/var/www/html
@@ -52,7 +49,3 @@ services:
       XDEBUG_CONFIG: remote_host=172.17.0.1
       PHP_IDE_CONFIG: serverName=queue
       TZ: "Europe/Amsterdam"
-
-volumes:
-  redis:
-    driver: "local"
