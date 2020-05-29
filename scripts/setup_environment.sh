@@ -14,7 +14,7 @@ mysql_password=$(
     head /dev/urandom | tr -dc A-Za-z0-9 | head -c 26
     echo ''
 )
-sed -i "s/^.*MYSQL_PASSWORD\: .*$/      MYSQL_PASSWORD: ${mysql_password}/" docker-compose.yml
+sed -i "s/^.*MYSQL_PASSWORD\:.*$/      MYSQL_PASSWORD: ${mysql_password}/" docker-compose.yml
 sed -i "s/^DB_PASSWORD=.*$/DB_PASSWORD=${mysql_password}/" .env
 
 # build docker images

@@ -13,7 +13,7 @@ Please make sure you have docker and docker-compose installed!
 
 Initiate your environment using the following command;
 ```shell script
-script/setup_environment.sh
+scripts/setup_environment.sh
 ```
 
 ## About Laravel
