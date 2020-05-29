@@ -39,7 +39,7 @@ echo "Containers are up and running!"
 # fixing permissions
 directories=(storage/app storage/framework storage/logs bootstrap/cache)
 for storageDirectory in "${directories[@]}"; do
-    docker exec "${dirName}"_webserver_1 chgrp -R www-data "${storageDirectory}"
+    docker exec "${dirName}"_webserver_1 chown -R www-data:www-data "${storageDirectory}"
     docker exec "${dirName}"_webserver_1 find "${storageDirectory}" -type f -exec chmod 644 {} \;
     docker exec "${dirName}"_webserver_1 find "${storageDirectory}" -type d -exec chmod 755 {} \;
 done

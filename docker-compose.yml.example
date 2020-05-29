@@ -18,7 +18,6 @@ services:
     volumes:
       - .:/var/www/html
       - ./storage/apache:/var/log/apache2
-      - ./storage:/var/www/html/storage
     ports:
       - "80:80"
     environment:
@@ -40,7 +39,6 @@ services:
     user: www-data
     volumes:
       - .:/var/www/html
-      - ./storage:/var/www/html/storage
     depends_on:
       - webserver
     environment:
