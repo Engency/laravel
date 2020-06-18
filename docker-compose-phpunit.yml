@@ -6,9 +6,9 @@ services:
     volumes:
       - ./storage/mysql:/var/lib/mysql
     environment:
-      MYSQL_DATABASE: ${DB_DATABASE}
-      MYSQL_USER: ${DB_USERNAME}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: klxs8cj3zkl2dsnzg89fklza
       MYSQL_ROOT_PASSWORD: root
       TZ: "Europe/Amsterdam"
 
@@ -19,7 +19,7 @@ services:
       - .:/var/www/html
       - ./storage/apache:/var/log/apache2
     ports:
-      - "${WEBSERVER_PORT}:80"
+      - "80:80"
     environment:
       CONTAINER_ROLE: app
       APP_ENV: local
