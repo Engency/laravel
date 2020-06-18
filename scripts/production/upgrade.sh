@@ -8,7 +8,7 @@ backup_live_environment() {
     echo 'Backing-up live environment...'
 
     cd ~/builds/live || return 1
-    vendor/bin/docker_inject php artisan backup:run --quiet
+    scripts/docker_inject.sh php artisan backup:run --quiet
     cd ../..
 
     return 0

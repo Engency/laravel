@@ -88,6 +88,6 @@ build:
         - scp repoName.tar.gz vpsxx.engency.com:~/builds/${version}/
         - ssh vpsxx.engency.com tar -xvf ~/builds/${version}/repoName.tar.gz --strip-components 1 -C ~/builds/${version}
         - ssh vpsxx.engency.com rm ~/builds/${version}/repoName.tar.gz
-        - ssh vpsxx.engency.com ~/builds/${version}/scripts/build.sh
-        - ssh vpsxx.engency.com ~/builds/${version}/vendor/bin/upgrade_service
-        - ssh vpsxx.engency.com ~/builds/${version}/scripts/finalize.sh
+        - ssh vpsxx.engency.com ~/builds/${version}/scripts/production/build.sh
+        - ssh vpsxx.engency.com ~/builds/${version}/scripts/production/upgrade.sh
+        - ssh vpsxx.engency.com ~/builds/${version}/scripts/production/finalize.sh
