@@ -50,5 +50,5 @@ else
         exit 1
     fi
     echo "Starting new ${serviceName}..."
-    docker-compose run --rm ${serviceName} "$@"
+    docker-compose run --entrypoint="" --rm ${serviceName} "$@"
 fi

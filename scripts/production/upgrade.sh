@@ -43,7 +43,7 @@ migrate_new_environment() {
     docker-compose up mariadb &
     sleep 5
 
-    result=$(docker-compose run --rm webserver php artisan migrate --force --no-interaction)
+    result=$(docker-compose run --entrypoint="" --rm webserver php artisan migrate --force --no-interaction)
     echo ${result}
 
     if [[ ${result} == *"Migrated:"* ]]; then
@@ -94,7 +94,7 @@ start_live_environment() {
 
 trigger_upgrade_script() {
     echo 'Triggering upgrade script...'
-    docker-compose run --rm webserver php artisan upgrade --quiet
+    docker-compose run --entrypoint="" --rm webserver php artisan upgrade --quiet
 
     return 0
 }
@@ -105,7 +105,7 @@ rollback_database() {
     ranMigrations=$(cat ~/builds/live/ranMigrations)
 
     if [[ ranMigrations -eq '1' ]]; then
-        docker-compose run --rm webserver php artisan migrate:rollback
+        docker-compose run --entrypoint="" --rm webserver php artisan migrate:rollback
     fi
 }
 

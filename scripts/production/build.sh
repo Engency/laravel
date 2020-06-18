@@ -1,7 +1,7 @@
 #!/bin/bash
 
 currentDir=$(dirname $0)
-cd ${currentDir}/..
+cd ${currentDir}/../..
 buildID=${PWD##*/}
 
 copy_environment_configuration() {
@@ -27,10 +27,10 @@ prepare_environment() {
 
     # install dependencies
     echo 'Installing dependencies...'
-    docker-compose run --no-deps --rm webserver composer install --no-scripts --no-interaction
+    docker-compose run --entrypoint="" --no-deps --rm webserver composer install --no-scripts --no-interaction
 
     # generate laravel key
-    docker-compose run --no-deps --rm webserver php artisan key:generate
+    docker-compose run --entrypoint="" --no-deps --rm webserver php artisan key:generate
 
     # check if dependency-directories exist
     if [[ -d ./vendor ]]; then return 0; else return 1; fi
