@@ -40,6 +40,8 @@ If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Lar
 
 We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
 
+### Premium Partners
+
 - **[Vehikl](https://vehikl.com/)**
 - **[Tighten Co.](https://tighten.co)**
 - **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
@@ -49,6 +51,11 @@ We would like to extend our thanks to the following sponsors for funding Laravel
 - **[Many](https://www.many.co.uk)**
 - **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
 - **[DevSquad](https://devsquad.com)**
+
+### Community Sponsors
+
+<a href="https://op.gg"><img src="http://opgg-static.akamaized.net/icon/t.rectangle.png" width="150"></a>
+
 - [UserInsights](https://userinsights.com)
 - [Fragrantica](https://www.fragrantica.com)
 - [SOFTonSOFA](https://softonsofa.com/)
@@ -68,7 +75,6 @@ We would like to extend our thanks to the following sponsors for funding Laravel
 - [Abdel Elrafa](https://abdelelrafa.com)
 - [Hyper Host](https://hyper.host)
 - [Appoly](https://www.appoly.co.uk)
-- [OP.GG](https://op.gg)
 - [云软科技](http://www.yunruan.ltd/)
 
 ## Contributing
