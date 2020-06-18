@@ -1,0 +1,15 @@
+[Unit]
+Description=Engency service
+After=network.target
+
+[Service]
+ExecStart=/etc/init.d/engency start $OPTIONS
+ExecReload=/etc/init.d/engency restart $OPTIONS
+ExecStop=/etc/init.d/engency stop $OPTIONS
+Restart=always
+Type=forking
+PIDFile=/var/run/engency.pid
+RestartSec=300
+
+[Install]
+WantedBy=default.target

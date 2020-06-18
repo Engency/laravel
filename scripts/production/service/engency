@@ -1,0 +1,53 @@
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides:          engency
+# Required-Start:    $all
+# Required-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Starts Engency application
+### END INIT INFO
+
+buildsPath=/home/scrutinizer/builds
+buildId=$(cat ${buildsPath}/liveBuildId)
+buildPath=${buildsPath}/${buildId}
+
+case "$1" in
+start)
+   cd $buildPath
+   output=$(mktemp "${TMPDIR:-/tmp/}log_laravel_engency_startup.XXX")
+   sudo -u scrutinizer docker-compose up &>$output &
+   server_pid=$!
+   until grep -q -i 'Server socket created on IP' $output; do
+       if ! ps $server_pid >/dev/null; then
+           echo "The server died" >&2
+           exit 1
+       fi
+       echo -n "."
+       sleep 1
+   done
+   echo
+   echo Engency is running
+   echo $!>/var/run/engency.pid
+   ;;
+stop)
+   kill `cat /var/run/engency.pid`
+   rm /var/run/engency.pid
+   ;;
+restart)
+   $0 stop
+   $0 start
+   ;;
+status)
+   if [ -e /var/run/engency.pid ]; then
+      echo Engency is running, pid=`cat /var/run/engency.pid`
+   else
+      echo Engency is NOT running
+      exit 1
+   fi
+   ;;
+*)
+   echo "Usage: $0 {start|stop|status|restart}"
+esac
+
+exit 0

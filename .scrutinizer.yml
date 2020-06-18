@@ -1,0 +1,93 @@
+filter:
+  paths:
+    - 'app/*'
+  excluded_paths:
+    - 'app/views/*'
+    - 'app/config/*'
+    - 'app/database/*'
+    - '*.min.js'
+checks:
+  php: true
+coding_style:
+  php:
+    spaces:
+      around_operators:
+        concatenation: true
+      other:
+        after_type_cast: false
+build:
+  environment:
+    php:
+      version: 7.4.0
+  dependencies:
+    before:
+      - cp .env.scrutinizer .env
+    override:
+      - composer install --ignore-platform-reqs --no-interaction --no-scripts
+  project_setup:
+    override:
+      - true
+  tests:
+    override:
+      - command: phpcs-run app database
+        use_website_config: false
+      - command: php-scrutinizer-run
+  nodes:
+    tests: true
+    extended:
+      environment:
+        docker: true
+      requires:
+        - is_pull_request: true
+      tests:
+        override:
+          # try to load docker layers from cache
+          - command: restore-from-cache repository docker-layers - | docker load
+            only_if: exists-in-cache repository docker-layers
+          # start phpunit container
+          - command: cd /home/scrutinizer/build
+          - command: docker-compose -f ./docker-compose-phpunit.yml run --rm phpunit_webserver phpunit --configuration=./phpunit.xml --coverage-clover=someFile
+            coverage:
+              format: 'clover'
+              file: 'someFile'
+          - command: docker-compose -f ./docker-compose-phpunit.yml run --rm phpunit_webserver vendor/bin/phpstan analyse --memory-limit=2g
+          # store docker layers in cache
+          - command: docker save build_phpunit_webserver build_phpunit_mariadb | store-in-cache repository docker-layers -
+          - command: docker ps -a
+    quick:
+      environment:
+        docker: true
+      requires:
+        - is_pull_request: false
+      tests:
+        override:
+          - command: docker -v
+          - command: docker-compose -v
+          # try to load docker layers from cache
+          - command: restore-from-cache repository docker-layers - | docker load
+            only_if: exists-in-cache repository docker-layers
+          # start phpunit container
+          - command: cd /home/scrutinizer/build
+          - command: docker-compose -f ./docker-compose-phpunit.yml run --rm phpunit_webserver phpunit --configuration=./phpunit.xml
+          - command: docker-compose -f ./docker-compose-phpunit.yml run --rm phpunit_webserver vendor/bin/phpstan analyse --memory-limit=2g
+          # store docker layers in cache
+          - command: docker save build_phpunit_webserver build_phpunit_mariadb | store-in-cache repository docker-layers -
+          - command: docker ps -a
+    deploy_to_live:
+      requires:
+        - node: quick
+        - branch: master
+        - is_pull_request: false
+      commands:
+        - echo "ready to deploy"
+        - checkout-code ~/repoName
+        - version=$(cd repoName && git rev-parse HEAD)
+        - tar -czf repoName.tar.gz repoName/
+        - ssh vpsxx.engency.com rm -rf ~/builds/${version}
+        - ssh vpsxx.engency.com mkdir ~/builds/${version}
+        - scp repoName.tar.gz vpsxx.engency.com:~/builds/${version}/
+        - ssh vpsxx.engency.com tar -xvf ~/builds/${version}/repoName.tar.gz --strip-components 1 -C ~/builds/${version}
+        - ssh vpsxx.engency.com rm ~/builds/${version}/repoName.tar.gz
+        - ssh vpsxx.engency.com ~/builds/${version}/scripts/build.sh
+        - ssh vpsxx.engency.com ~/builds/${version}/vendor/bin/upgrade_service
+        - ssh vpsxx.engency.com ~/builds/${version}/scripts/finalize.sh
