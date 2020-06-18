@@ -7,15 +7,14 @@ dirName=${PWD##*/}
 
 # create .env file
 cp .env.example .env
-cp docker-compose.yml.example docker-compose.yml
 
 # set random mysql password
 mysql_password=$(
     head /dev/urandom | tr -dc A-Za-z0-9 | head -c 26
     echo ''
 )
-sed -i "s/^.*MYSQL_PASSWORD\:.*$/      MYSQL_PASSWORD: ${mysql_password}/" docker-compose.yml
 sed -i "s/^DB_PASSWORD=.*$/DB_PASSWORD=${mysql_password}/" .env
+export WORKSPACE=`pwd`; set -a; . .env; rm -f docker-compose.yml; envsubst < "docker-compose.yml.example" > "docker-compose.yml";
 
 # build docker images
 docker-compose pull

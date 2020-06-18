@@ -19,6 +19,9 @@ generate_docker_compose_file() {
 }
 
 prepare_environment() {
+    # build images
+    docker-compose build
+
     # fix permissions #todo
     chmod -R 777 bootstrap/cache
 
