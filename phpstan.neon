@@ -1,0 +1,38 @@
+includes:
+    - ./vendor/nunomaduro/larastan/extension.neon
+
+parameters:
+    paths:
+        - app
+
+    # The level 8 is the highest level
+    level: 8
+
+    excludes_analyse:
+
+    ignoreErrors:
+        - '#Call to an undefined method .*::withTrashed\(\)#'
+        - '#Call to an undefined method .*::searchable\(\)#'
+        - '#Call to an undefined method .*::withPivot\(\)#'
+        - '#Call to an undefined method .*::active\(\)#'
+        - '#Call to an undefined method .*::getQuery\(\)#'
+        - '#Call to an undefined method App\\Models\\Model::validateAndUpdate\(\)#'
+        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Builder::.*\(\)#'
+        - '#Method Illuminate\\Database\\Query\\Builder::dynamicWhere\(\) invoked with 3 parameters, 1 required\.#'
+        - '#Call to an undefined method .*::factory().*#'
+        - '#expects string, array\|string\|null given\.#'
+        - '#Method .*() has no return typehint specified#'
+        - '#Property .* has no typehint specified#'
+        - '#Call to an undefined method Illuminate\\Auth\\AuthManager::.*()\.#'
+        - '#Method .*\(\) should return static\(.*\) but returns .*\.#'
+        - '#Cannot cast .* to string\.#'
+        - '#Cannot call method each\(\).*Illuminate\\Database\\Eloquent\\Collection\.#'
+        - '#Cannot access property .* on App\\Models\\.*\|null\.#'
+        - '#Cannot call method .*\(\) on App\\Models\\.*\|null\.#'
+        - '#Parameter .* of method .* expects App\\Models\\.*, App\\Models\\.*\|null given.#'
+        - '#Parameter .* of class .* expects App\\Models\\.*, App\\Models\\.*\|null given.#'
+        - '#Parameter \#1 \$function of function call_user_func expects callable\(\)\: mixed, string given\.#'
+
+    checkMissingIterableValueType: false
+    noUnnecessaryCollectionCall: false
+    reportUnmatchedIgnoredErrors: false
