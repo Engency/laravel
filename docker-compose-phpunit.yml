@@ -1,10 +1,8 @@
 version: '3'
 
 services:
-  mariadb:
+  phpunit_mariadb:
     image: mariadb:10.5.3-bionic
-    volumes:
-      - ./storage/mysql:/var/lib/mysql
     environment:
       MYSQL_DATABASE: laravel
       MYSQL_USER: laravel
@@ -12,12 +10,13 @@ services:
       MYSQL_ROOT_PASSWORD: root
       TZ: "Europe/Amsterdam"
 
-  webserver:
+  phpunit_webserver:
     image: engency/webserver:debug-webserver-npm
     entrypoint: ./scripts/startup.sh
     volumes:
       - .:/var/www/html
-      - ./storage/apache:/var/log/apache2
+      - ./storage_template:/var/www/html/storage
+      - ./docker/webserver/logs:/var/log/apache2
     ports:
       - "80:80"
     environment:
@@ -25,19 +24,4 @@ services:
       APP_ENV: local
       XDEBUG_CONFIG: remote_host=172.17.0.1
       PHP_IDE_CONFIG: serverName=webserver
-      TZ: "Europe/Amsterdam"
-
-  queue:
-    image: engency/webserver:debug-webserver
-    entrypoint: ./scripts/startup.sh
-    user: www-data
-    volumes:
-      - .:/var/www/html
-    depends_on:
-      - webserver
-    environment:
-      CONTAINER_ROLE: queue
-      APP_ENV: local
-      XDEBUG_CONFIG: remote_host=172.17.0.1
-      PHP_IDE_CONFIG: serverName=queue
       TZ: "Europe/Amsterdam"
