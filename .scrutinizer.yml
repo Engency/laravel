@@ -42,8 +42,8 @@ build:
       tests:
         override:
           # try to load docker layers from cache
-          - command: restore-from-cache repository docker-layers - | docker load
-            only_if: exists-in-cache repository docker-layers
+#          - command: restore-from-cache repository docker-layers - | docker load
+#            only_if: exists-in-cache repository docker-layers
           # start phpunit container
           - command: cd /home/scrutinizer/build
           - command: docker-compose -f ./docker-compose-phpunit.yml run --entrypoint="" --rm phpunit_webserver phpunit --configuration=./phpunit.xml --coverage-clover=someFile
@@ -54,7 +54,7 @@ build:
           - command: docker-compose -f ./docker-compose-phpunit.yml run --entrypoint="" --rm phpunit_webserver vendor/bin/phpstan analyse --memory-limit=2g
             idle_timeout: 600
           # store docker layers in cache
-          - command: docker save build_phpunit_webserver build_phpunit_mariadb | store-in-cache repository docker-layers -
+#          - command: docker save build_phpunit_webserver build_phpunit_mariadb | store-in-cache repository docker-layers -
           - command: docker ps -a
     quick:
       environment:
@@ -66,8 +66,8 @@ build:
           - command: docker -v
           - command: docker-compose -v
           # try to load docker layers from cache
-          - command: restore-from-cache repository docker-layers - | docker load
-            only_if: exists-in-cache repository docker-layers
+#          - command: restore-from-cache repository docker-layers - | docker load
+#            only_if: exists-in-cache repository docker-layers
           # start phpunit container
           - command: cd /home/scrutinizer/build
           - command: docker-compose -f ./docker-compose-phpunit.yml run --entrypoint="" --rm phpunit_webserver phpunit --configuration=./phpunit.xml
@@ -75,7 +75,7 @@ build:
           - command: docker-compose -f ./docker-compose-phpunit.yml run --entrypoint="" --rm phpunit_webserver vendor/bin/phpstan analyse --memory-limit=2g
             idle_timeout: 600
           # store docker layers in cache
-          - command: docker save build_phpunit_webserver build_phpunit_mariadb | store-in-cache repository docker-layers -
+#          - command: docker save build_phpunit_webserver build_phpunit_mariadb | store-in-cache repository docker-layers -
           - command: docker ps -a
     deploy_to_live:
       requires:
