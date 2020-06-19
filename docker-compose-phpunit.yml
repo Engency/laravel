@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3'
 
 services:
   mariadb:
@@ -26,12 +26,6 @@ services:
       XDEBUG_CONFIG: remote_host=172.17.0.1
       PHP_IDE_CONFIG: serverName=webserver
       TZ: "Europe/Amsterdam"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost"]
-      interval: 5m
-      timeout: 5s
-      retries: 3
-      start_period: 10s
 
   queue:
     image: engency/webserver:debug-webserver

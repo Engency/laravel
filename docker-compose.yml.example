@@ -5,6 +5,8 @@ services:
     image: mariadb:10.5.3-bionic
     volumes:
       - ./storage/mysql:/var/lib/mysql
+    ports:
+      - "${EXTERNAL_DATABASE_PORT}:3306"
     environment:
       MYSQL_DATABASE: ${DB_DATABASE}
       MYSQL_USER: ${DB_USERNAME}
