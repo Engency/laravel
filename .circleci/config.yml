@@ -1,0 +1,88 @@
+# PHP CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-php/ for more details
+#
+version: 2
+jobs:
+  code_quality:
+    docker:
+      - image: engency/webserver:webserver-npm
+      # database
+      - image: mariadb:10.5.3-bionic
+        environment:
+          MYSQL_DATABASE: homestead
+          MYSQL_USER: homestead
+          MYSQL_PASSWORD: zikshde64z8sgjkaslrq72
+          MYSQL_ROOT_PASSWORD: root
+        name: db
+
+    steps:
+      - checkout
+
+      # prepare environment
+      - run: cp .env.circleci .env
+      - run: cp -R storage_template storage
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "composer.lock" }}
+            - v1-dependencies-
+      - run: composer install --ignore-platform-reqs --no-interaction --no-scripts
+      - save_cache:
+          key: v1-dependencies-{{ checksum "composer.lock" }}
+          paths:
+            - ./vendor
+
+      - run:
+          name: Running LaraStan
+          command: composer code-analyse
+      - run:
+          name: Checking for vulnerabilities
+          command: composer vulnerability-check
+      - run:
+          name: Running PHPMetrics
+          command: php vendor/bin/phpmetrics --report-violations=/root/phpmetrics/violations.xml --report-html=/root/phpmetrics/html .
+      - run:
+          name: Running migrations
+          command: php artisan migrate
+      - run:
+          name: Seed database
+          command: php artisan db:seed
+
+      # Upload test results
+      - store_test_results:
+          path: ~/phpmetrics
+      - store_artifacts:
+          path: ~/phpmetrics
+
+  deploy_live:
+    machine:
+      enabled: true
+    steps:
+      - checkout
+      - run:
+          name: Deploying to live-environment
+          command: |
+            cd /home/circleci
+            version=$(cd project && git rev-parse HEAD)
+            tar -czf project.tar.gz project
+            ssh engency@vpsxx.engency.com mkdir /home/engency/builds/${version}
+            scp project.tar.gz engency@vpsxx.engency.com:/home/engency/builds/${version}/
+            ssh engency@vpsxx.engency.com tar -xvf /home/engency/builds/${version}/project.tar.gz --strip-components 1 -C /home/engency/builds/${version}
+            ssh engency@vpsxx.engency.com rm /home/engency/builds/${version}/project.tar.gz
+            ssh engency@vpsxx.engency.com /home/engency/builds/${version}/scripts/build.sh
+            ssh engency@vpsxx.engency.com /home/engency/builds/${version}/vendor/bin/upgrade_service
+            ssh engency@vpsxx.engency.com /home/engency/builds/${version}/scripts/finalize.sh
+
+workflows:
+  version: 2
+  test_and_deploy:
+    jobs:
+      - code_quality
+#      - deploy_live:
+#          requires:
+#            - code_quality
+#          filters:
+#            branches:
+#              only: master

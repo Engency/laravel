@@ -8,7 +8,7 @@
 # Short-Description: Starts Engency application
 ### END INIT INFO
 
-buildsPath=/home/scrutinizer/builds
+buildsPath=/home/engency/builds
 buildId=$(cat ${buildsPath}/liveBuildId)
 buildPath=${buildsPath}/${buildId}
 
@@ -16,7 +16,7 @@ case "$1" in
 start)
    cd $buildPath
    output=$(mktemp "${TMPDIR:-/tmp/}log_laravel_engency_startup.XXX")
-   sudo -u scrutinizer docker-compose up &>$output &
+   sudo -u engency docker-compose up &>$output &
    server_pid=$!
    until grep -q -i 'Server socket created on IP' $output; do
        if ! ps $server_pid >/dev/null; then
