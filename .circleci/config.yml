@@ -10,11 +10,11 @@ jobs:
       # database
       - image: mariadb:10.5.3-bionic
         environment:
-          MYSQL_DATABASE: homestead
-          MYSQL_USER: homestead
-          MYSQL_PASSWORD: zikshde64z8sgjkaslrq72
+          MYSQL_DATABASE: laravel
+          MYSQL_USER: laravel
+          MYSQL_PASSWORD: klxs8cj3zkl2dsnzg89fklza
           MYSQL_ROOT_PASSWORD: root
-        name: db
+        name: mariadb
 
     steps:
       - checkout
